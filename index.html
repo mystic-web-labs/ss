@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="zh" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ENTIDADES COLABORADORAS</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <style>
+        /* =========================================
+           1. APPLE THEME VARIABLEN
+           ========================================= */
+        :root {
+            --bg-color: #e5e5ea;
+            --blob-1: #ff2a5f;
+            --blob-2: #007aff;
+            --blob-3: #ff9500;
+            --blob-opacity: 0.7;
+            
+            --glass-bg: rgba(255, 255, 255, 0.25);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --glass-shadow: rgba(0, 0, 0, 0.08);
+            --glass-highlight: rgba(255, 255, 255, 0.8);
+            --glass-caustic: rgba(255, 255, 255, 0.4);
+            --reflection-start: rgba(255, 255, 255, 0.6);
+            --reflection-end: rgba(255, 255, 255, 0.0);
+            --glare-color: rgba(255, 255, 255, 0.5);
+            
+            --pill-bg: rgba(255, 255, 255, 0.7);
+            --pill-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.05), inset 0 1px 1px rgba(255,255,255,0.8);
+            --icon-color: rgba(0, 0, 0, 0.5);
+            --icon-active: rgba(0, 0, 0, 0.95);
+            --divider: rgba(0, 0, 0, 0.15);
+
+            --text-main: #1d1d1f;
+            --text-secondary: #86868b;
+            --card-glass: rgba(255, 255, 255, 0.5);
+            --card-glass-hover: rgba(255, 255, 255, 0.7);
+            --card-border: rgba(255, 255, 255, 0.6);
+            --card-contacted: rgba(200, 200, 200, 0.3);
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #000000;
+            --blob-1: #bf5af2;
+            --blob-2: #0a84ff;
+            --blob-3: #ff375f;
+            --blob-opacity: 0.5;
+            
+            --glass-bg: rgba(30, 30, 35, 0.45);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --glass-shadow: rgba(0, 0, 0, 0.8);
+            --glass-highlight: rgba(255, 255, 255, 0.25);
+            --glass-caustic: rgba(255, 255, 255, 0.05);
+            --reflection-start: rgba(255, 255, 255, 0.15);
+            --reflection-end: rgba(255, 255, 255, 0.0);
+            --glare-color: rgba(255, 255, 255, 0.15);
+            
+            --pill-bg: rgba(60, 60, 65, 0.8);
+            --pill-shadow: 0 4px 12px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.2), inset 0 1px 1px rgba(255,255,255,0.2);
+            --icon-color: rgba(255, 255, 255, 0.5);
+            --icon-active: #ffffff;
+            --divider: rgba(255, 255, 255, 0.15);
+
+            --text-main: #f5f5f7;
+            --text-secondary: #a1a1a6;
+            --card-glass: rgba(30, 30, 35, 0.4);
+            --card-glass-hover: rgba(50, 50, 55, 0.5);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --card-contacted: rgba(20, 20, 25, 0.3);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: transparent; -webkit-font-smoothing: antialiased; color: var(--text-main); margin: 0; height: 100vh; }
+        #root { height: 100%; display: flex; flex-direction: column; }
+
+        .bg-mesh { position: fixed; inset: 0; z-index: -1; background: var(--bg-color); transition: background 0.8s ease; overflow: hidden; }
+        .blob { position: absolute; border-radius: 50%; filter: blur(90px); opacity: var(--blob-opacity); animation: float 20s infinite alternate cubic-bezier(0.45, 0.05, 0.55, 0.95); will-change: transform; transition: background 0.8s ease, opacity 0.8s ease; }
+        .blob-1 { width: 50vw; height: 50vw; top: -10%; left: -10%; background: var(--blob-1); animation-delay: 0s; }
+        .blob-2 { width: 45vw; height: 45vw; bottom: -10%; right: -10%; background: var(--blob-2); animation-delay: -5s; }
+        .blob-3 { width: 35vw; height: 35vw; top: 30%; left: 40%; background: var(--blob-3); animation-delay: -10s; }
+        @keyframes float { 0% { transform: translate(0, 0) scale(1) rotate(0deg); } 33% { transform: translate(5%, 10%) scale(1.05) rotate(5deg); } 66% { transform: translate(-5%, 5%) scale(0.95) rotate(-5deg); } 100% { transform: translate(0, -10%) scale(1.1) rotate(0deg); } }
+
+        .glass-card { background: var(--card-glass); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); border: 1px solid var(--card-border); box-shadow: 0 10px 30px -10px var(--glass-shadow), inset 0 1px 0 rgba(255,255,255,0.2); transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
+        .glass-card:hover { background: var(--card-glass-hover); transform: translateY(-4px); box-shadow: 0 15px 35px -5px var(--glass-shadow), inset 0 1px 0 rgba(255,255,255,0.3); }
+        .glass-card.contacted { background: var(--card-contacted); border-color: transparent; opacity: 0.7; }
+        .app-container { flex: 1; overflow-y: auto; padding-bottom: 60px; }
+        
+        .glass-btn { background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-main); box-shadow: 0 4px 10px -2px var(--glass-shadow); transition: all 0.2s ease; cursor: pointer; }
+        .glass-btn:hover { background: var(--glass-highlight); color: #000; border-color: rgba(255,255,255,0.8); }
+
+        .glass-input { background: var(--card-glass); backdrop-filter: blur(20px); border: 1px solid var(--card-border); color: var(--text-main); transition: all 0.3s ease; }
+        .glass-input:focus { outline: none; background: var(--card-glass-hover); border-color: var(--text-secondary); box-shadow: 0 0 0 2px rgba(150, 150, 150, 0.2); }
+        .glass-input::placeholder { color: var(--text-secondary); }
+
+        .home-big-btn { position: relative; width: 100%; max-width: 200px; height: 44px; border-radius: 22px; display: flex; align-items: center; justify-content: center; background: var(--glass-bg); backdrop-filter: blur(50px) saturate(200%); -webkit-backdrop-filter: blur(50px) saturate(200%); box-shadow: 0 10px 20px -5px var(--glass-shadow), 0 5px 10px -2px var(--glass-shadow), inset 0 1px 2px -1px var(--glass-highlight), inset 0 -1px 2px -1px var(--glass-caustic), inset 0 0 0 1px var(--glass-border); transition: all 0.4s cubic-bezier(0.34, 1.2, 0.64, 1); cursor: pointer; overflow: hidden; z-index: 10; }
+        .home-big-btn::before { content: ''; position: absolute; top: 1px; left: 1px; right: 1px; height: 40%; border-radius: 22px 22px 6px 6px / 22px 22px 3px 3px; background: linear-gradient(180deg, var(--reflection-start) 0%, var(--reflection-end) 100%); pointer-events: none; z-index: 6; }
+        .home-big-btn:hover { transform: scale(1.03); box-shadow: 0 15px 25px -8px var(--glass-shadow), 0 8px 15px -3px var(--glass-shadow), inset 0 1px 2px -1px var(--glass-highlight), inset 0 -1px 2px -1px var(--glass-caustic), inset 0 0 0 1px var(--glass-highlight); }
+        .home-big-btn:active { transform: scale(0.96); }
+        .home-big-btn .btn-text { font-size: 0.85rem; font-weight: 500; letter-spacing: 0.5px; color: var(--text-main); z-index: 7; text-shadow: 0 1px 2px var(--glass-shadow); }
+
+        .liquid-glare-container { position: absolute; inset: 0; border-radius: 99px; overflow: hidden; pointer-events: none; z-index: 5; }
+        .liquid-glare { position: absolute; inset: 0; opacity: 0; transition: opacity 0.3s ease; background: radial-gradient(circle 90px at var(--x, 50%) var(--y, 50%), var(--glare-color) 0%, transparent 100%); mix-blend-mode: overlay; }
+        .home-big-btn:hover .liquid-glare { opacity: 1; }
+
+        .back-glass-btn { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 99px; background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--glass-border); color: var(--text-main); font-size: 0.9rem; font-weight: 500; box-shadow: 0 4px 10px var(--glass-shadow); transition: all 0.2s ease; cursor: pointer; }
+        .back-glass-btn:hover { transform: translateX(-4px); background: var(--glass-highlight); color: #000; }
+        
+        .theme-btn { position: relative; background: transparent; border: none; width: 44px; height: 44px; border-radius: 50%; color: var(--text-main); opacity: 0.5; cursor: pointer; -webkit-tap-highlight-color: transparent; z-index: 3; outline: none; margin-left: 2px; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; }
+        .theme-btn:hover, .theme-btn:active { opacity: 1; }
+        .theme-icon-wrapper { position: relative; width: 20px; height: 20px; pointer-events: none; transition: transform 0.2s cubic-bezier(0.32, 0.72, 0, 1); }
+        .theme-btn:active .theme-icon-wrapper { transform: scale(0.8); }
+        .theme-icon-wrapper svg { position: absolute; top: 0; left: 0; transition: transform 0.5s cubic-bezier(0.34, 1.2, 0.64, 1), opacity 0.4s ease; stroke-width: 2.2; }
+        .sun { opacity: 1; transform: rotate(0deg) scale(1); }
+        .moon { opacity: 0; transform: rotate(-90deg) scale(0); }
+        [data-theme="dark"] .sun { opacity: 0; transform: rotate(90deg) scale(0); }
+        [data-theme="dark"] .moon { opacity: 1; transform: rotate(0deg) scale(1); }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useRef } = React;
+
+        // 数据库 1: 新导入的马德里免预约注册办公室 (Sin Cita Previa)
+        const localOfficesData = [
+            { name: "Agencia para el Empleo de Madrid", address: "Paseo Pontones 10, 28005 Madrid", telDisplay: "010 / 914 800 010", telDial: "914800010" },
+            { name: "Agencia de Actividades", address: "Calle Bustamante 16, 28045 Madrid", telDisplay: "010 / 914 800 010", telDial: "914800010" },
+            { name: "Coordinación General Alcaldía", address: "Calle Montalbán 1, 28014 Madrid", telDisplay: "010 / 914 800 010", telDial: "914800010" },
+            { name: "Coordinación General de Urbanismo", address: "Calle Ribera del Sena 21, 28042 Madrid", telDisplay: "010 / 914 800 010", telDial: "914800010" },
+            { name: "Dirección General de Gestión y Vigilancia de la Circulación", address: "Calle Albarracín 33, 28037 Madrid", telDisplay: "010 / 914 800 010", telDial: "914800010" },
+            { name: "Informática del Ayuntamiento de Madrid (IAM)", address: "Calle Albarracín 33, 28037 Madrid", telDisplay: "010 / 914 800 010", telDial: "914800010" },
+            { name: "Madrid Salud", address: "Avenida Mediterráneo 62, 28007 Madrid", telDisplay: "010 / 914 800 010", telDial: "914800010" },
+            { name: "Medio Ambiente y Movilidad", address: "Calle Montalbán 1, 28014 Madrid", telDisplay: "010 / 914 800 010", telDial: "914800010" },
+            { name: "Portavoz, Seguridad y Emergencias", address: "Calle Príncipe de Vergara 140, 28002 Madrid", telDisplay: "010 / 914 800 010", telDial: "914800010" },
+            { name: "Vicealcaldía", address: "Calle Montalbán 1, 28014 Madrid", telDisplay: "010 / 914 800 010", telDial: "914800010" },
+            { name: "Área de Gobierno de Cultura, Turismo y Deporte", address: "Calle Montalbán 1, 28014 Madrid", telDisplay: "010 / 914 800 010", telDial: "914800010" },
+            { name: "Área de Gobierno de Políticas Sociales, Familia e Igualdad", address: "Ronda Toledo 10, 28005 Madrid", telDisplay: "010 / 914 800 010", telDial: "914800010" },
+            { name: "Área de Gobierno de Políticas de Vivienda", address: "Calle Doctor Esquerdo 138, 28007 Madrid", telDisplay: "010 / 914 800 010", telDial: "914800010" }
+        ];
+
+        // 数据库 2: 移民署合作机构 (Agencies)
+        const agenciesData = [
+            { name: "ASOCIACIÓN SOLIDARIOS SPORT", url: "" },
+            { name: "RED SOS REFUGIADOS EUROPA", url: "https://sosrefugiados.org/" },
+            { name: "ASOCIACION CERES", url: "https://ceres.org.es" },
+            { name: "ASSOCIACIÓ NOVES VIES", url: "https://www.novesvies.com/" },
+            { name: "MOVIMIENTO DE MUJERES MIGRANTES DE EXTREMADURA", url: "https://lasmigrantas.org/" },
+            { name: "ASOCIACIÓN AT-TAWBA", url: "" },
+            { name: "GAZTAROA SARTU KOOP ELK DE INICIATIVA SOCIAL", url: "https://gaztaroa-sartu.eus/" },
+            { name: "ESPAI OBERT EL MARÍTIM", url: "https://www.espaiobertelmaritim.com/" },
+            { name: "ASOCIACIÓN CLARETIANA PARA EL DESARROLLO HUMANO SORTARAZI", url: "https://sortarazi.org/" },
+            { name: "ASOVEDRA", url: "https://asovedra.org/" },
+            { name: "ASOCIACIÓN SOCIAL, SANITARIA, CULTURAL, EDUCATIVO, CIENTIFICO Υ DEPORTIVO ACCIONES UNIDAS", url: "https://www.asociacionaccionesunidas.com/" },
+            { name: "ASOCIACIÓN DE DESARROLLO COMUNITARIO BUENOS AIRES (ASDECOBA)", url: "" },
+            { name: "HUELVA ACOGE", url: "https://huelvaacoge.org/" },
+            { name: "MALEN ETXEA, ASOCIACIÓN DE MUJERES INMIGRANTES", url: "https://malenetxea.org/" },
+            { name: "FUNDACIÓN PARA LA INNOVACIÓN, INVESTIGACIÓN, FORMACIÓN Y EL DESARROLLO COMUNITARIO (FÜNDEC)", url: "https://www.fundec.es/" },
+            { name: "SOS RACISMO GALICIA", url: "https://sosracismo.eu/sos-racismo-galicia/" },
+            { name: "ASOCIACIÓN POR TI MUJER", url: "https://asociacionportimujer.org/" },
+            { name: "ASOCIACIÓN CATNOVA", url: "https://www.catnova.cat/" },
+            { name: "FUNDACIÓN LA MERCED MIGRACIONES", url: "https://lamercedmigraciones.org/" },
+            { name: "MUNDO EN MOVIMIENTO", url: "https://www.mundoenmovimiento.org/" },
+            { name: "FEDERACIÓN ANDALUCÍA ACOGE - SUR ACOGE", url: "https://acoge.org/" },
+            { name: "CENTRO SOCIOCULTURAL ZAIDIN", url: "https://csczaidin.wordpress.com" },
+            { name: "ASOCIACIÓN DE DESCENDIENTES DE ESPAÑOLES EN EL MUNDO (ADEM)", url: "https://www.soydescendiente.es" },
+            { name: "ASSOCIACIÓ QUILÒMETREZERO", url: "https://quilometrezero.cat/" },
+            { name: "ZEHAR-ERRFUXIATUEKIN", url: "https://zehar.eus/" },
+            { name: "ASOCIACIÓN ALMERÍA ACOGE", url: "https://www.almeriaacoge.org/" },
+            { name: "ASOCIACION ALBA", url: "" },
+            { name: "LA RUECA ASOCIACIÓN", url: "https://larueca.org/" },
+            { name: "ASOCIACIÓN JOVESÓLIDES", url: "https://jovesolides.org/" },
+            { name: "ASOCIACIÓN FISA BOA VIDA", url: "https://boavida.org/" },
+            { name: "ASOCIACIÓN PARA LA INTEGRACIÓN SOCIAL ALIETXEA", url: "" },
+            { name: "FUNDACIÓ MIFAS", url: "https://www.mifas.cat/ca/" },
+            { name: "ASOCIACIÓN NUEVA CIUDADANÍA POR LA INTERCULTURALIDAD", url: "https://asnuci.org/inicio" },
+            { name: "ACULCO ASOCIACIÓN SOCIO-CULTURAL Y DE COOPERACIÓN", url: "https://aculco.org/" },
+            { name: "OFICINAS DE DERECHOS SOCIALES DE SEVILLA", url: "https://ods-sevilla.com/" },
+            { name: "ASOCIACIÓN ARRAIANAS", url: "https://www.arraianas.org/es" },
+            { name: "FUNDACIÓN AGRICULTORES SOLIDARIOS", url: "https://www.pagesossolidaris.org/es/" },
+            { name: "LAFUNDICIO, SCCL", url: "https://lafundicio.net/" },
+            { name: "FUNDACIÓN IBN BATTUTA", url: "https://www.fundacioibnbattuta.org/?lang=es" },
+            { name: "ASOCIACIÓN COLECTIVO AGAR ESPACIO DE INVETIGACIÓN Y ENCUENTRO DESDE LA DIVERSIDAD", url: "" },
+            { name: "ELKARRI LAGUNTZA-APOYO MUTUO", url: "" },
+            { name: "MÁLAGA ACOGE", url: "https://malaga.acoge.org/" },
+            { name: "CENTRE DE DESENVOLUPAMENT RURAL ALT MAESTRAT", url: "https://www.cdraltmaestrat.org/" },
+            { name: "HAURRALDE FUNDAZIOA", url: "https://haurraldefundazioa.org/" },
+            { name: "ASOCIACIÓN POR EL DESARROLLO SOSTENIBLE DE ALBACETE", url: "https://adesalbacete.wordpress.com/" },
+            { name: "COAG ALMERÍA", url: "https://coagalmeria.com/" },
+            { name: "ASOCIACIÓN MUJERES PALANTE", url: "https://www.mujerespalante.org/" },
+            { name: "ASOCIACIÓN PLATAFORMA INTERCULTURAL DE ESPAÑA", url: "https://plataformaintercultural.es/" },
+            { name: "FUNDACIÓN SOCIAL IGNACIO ELLACURIA", url: "https://fundacionellacuria.org/" },
+            { name: "ASOCIACIÓN DE MOVILIDAD HUMANA", url: "https://mhumana.org/" },
+            { name: "ASOCIACIÓN DE COLOMBIANOS Y COLOMBIANAS EN EL PAÍS VASCO", url: "https://mhumana.org/" },
+            { name: "ASOCIACIÓN SOCIOCULTURAL ALTO JALÓN", url: "https://www.asociacionaltojalon.wixsite.com" },
+            { name: "ASOC OLEUM CHICLANA IBN", url: "" },
+            { name: "AMÉRICA, ESPAÑA, SOLIDARIDAD Y COOPERACIÓN (AESCO)", url: "https://ong-aesco.com/" },
+            { name: "PATRONATO CONCEPCIÓN ARENAL", url: "" },
+            { name: "ASOCIACIÓN ACCIÓN TRIÁNGULO", url: "https://acciontriangulo.org/" },
+            { name: "ASOCIACIÓN MUJERES CON VOZ", url: "https://mujeresyvoces.blogspot.com/" },
+            { name: "ASSOCIACIÓ SOCIOEDUCATIVA NOUSOL", url: "https://nousol.org/" },
+            { name: "ASOCIACIÓN ASISTENCIAL NAHIA", url: "https://www.asociacionnahia.org/" },
+            { name: "FEDERACIÓN DE MIGRANTES EN LANZAROTE- FEDEMILANZ", url: "https://fedemilanz.com/" },
+            { name: "ASOCIACIÓN AMAR DRAGOSTE", url: "https://amardragoste.org/" },
+            { name: "FUNDACIÓN CLARET ENEA", url: "https://claretenea.org/" },
+            { name: "SERVICIO CAPUCHINO PARA EL DESARROLLO Y LA SOLIDARIDAD", url: "https://www.sercade.org/" },
+            { name: "FUNDACIÓN FEDERICO OZANAM", url: "https://www.ozanam.es/" },
+            { name: "FUNDACIÓN RED ÍNCOLA", url: "https://redincola.org/" },
+            { name: "MUJERES UNIDAS ENTRE TIERRAS", url: "https://mujeresunidasentretierras.org/" },
+            { name: "FUNDACIÓN SAN EZEQUIEL MORENO", url: "https://fundacionsanezequiel.org/" },
+            { name: "GRANADA ACOGE", url: "https://www.granadaacoge.com/" },
+            { name: "FUNDACIÓN PROLIBERTAS", url: "https://www.prolibertas.org/" },
+            { name: "CEAIN (CENTRO DE ACOGIDA DE INMIGRANTES)", url: "https://ceain.acoge.org/" },
+            { name: "SINDIHOGAR", url: "https://sindihogar.org/" },
+            { name: "ASOCIACIÓN SOCIAL SOLIDARIDAD VENEZUELA", url: "" },
+            { name: "FUNDACIÓN INDIAN CULTURE CENTRE", url: "https://culturaindia.cat/es/" },
+            { name: "ASOCIACIÓN DE MUJERES LATRÉBEDE", url: "https://latrebede.wordpress.com" },
+            { name: "GRANS PROJECTES SOLIDARIS", url: "https://coopcamp.cat/entitat/grans-projectes-solidaries/" },
+            { name: "EMPRESA COMUNITARIAS ASOCIATIVA DE TRABAJO SOLIDARIOS DE ESPAÑA ONG EMCAT", url: "https://emcatsolidaridad.org/" },
+            { name: "ASOCIACIÓN DE MUJERES HEGOAK ETA SUSTRAIAK/ALAS Y RAÍCES", url: "https://alasyraicesbilbao.org/" },
+            { name: "ASOCIACIÓN DE REINSERCIÓN SOCIAL SARTU-ÁLAVA", url: "https://alava.sartu.net" },
+            { name: "ASOCIACIÓN DE FAMILIAS SOLIDARIAS PARA EL DESARROLLO", url: "https://familiasolidarias.org/" },
+            { name: "FUNDACIÓN ALTIUS ESPAÑA", url: "https://www.fundacionaltius.org/" },
+            { name: "ASOCIACIÓN ITXAROPEN GUNE", url: "https://www.itxaropengune.org/" },
+            { name: "ASSOCIACIÓ FRUITA AMB JUSTÍCIA SOCIAL", url: "https://fruitaambjusticia.cat/" },
+            { name: "FUNDACIÓN PRIVADA FICAT", url: "https://www.ficat.org/es/" },
+            { name: "ARCÓPOLI", url: "https://arcopoli.org/" },
+            { name: "FUNDACIÓN RUY LÓPEZ", url: "https://fruylopez.blogspot.com/" },
+            { name: "ASOCIACIÓN DE MUJERES EMPRESARIAS IBEROAMERICANAS AMEIB PACHAΜΑΜΑ", url: "https://www.asociacionpachamama.org/" },
+            { name: "ONG MESTURA", url: "https://www.ongmestura.es/" },
+            { name: "ASOCIACIÓN VECINAL UNIÓN ESGUEVA", url: "https://unionesgueva.com/" },
+            { name: "ASOCIACIÓN PARA LA INSERCIÓN LABORAL Y FOMENTO DE ECONOMÍA SOCIAL ACTÚA", url: "https://www.tenerifeislasolidaria.org/portfolio_page/asociacion-para-la-insercion-laboral-y-fomento-de-economia-social-actua/" },
+            { name: "BUMEI GALICIA: BUENAS PRÁCTICAS, MUJER, EMPLEO, INCLUSIÓN", url: "https://www.bumeigalicia.com/inicio" },
+            { name: "ASSOCIACIÓ CULTURAL L'ALETA", url: "" },
+            { name: "ASOCIACIÓN MUYERES PACHAMAMA", url: "" },
+            { name: "ASOCIACIÓN PARA A PROMOCIÓN SOCIAL E A INSERCIÓN LABORAL PLATAFORMA POLO EMPREGO", url: "https://www.plataformapoloemprego.org/" },
+            { name: "ASSOCIACIÓ ECCIT", url: "https://www.eccit.org/" },
+            { name: "KOLECTIVO JOVENES PARKE", url: "https://kolectivosparke.org/" },
+            { name: "FUNDACIÓ MOLÍ D'EN PUIGVERT", url: "https://www.fundaciomoli.org/" },
+            { name: "ASOCIACIÓN SAN NIKOLAS ZABALIK", url: "https://www.sannikolaszabalik.wordpress.com" },
+            { name: "ASOCIACIÓN JORGE ADOLFO FREYTTER ROMERO", url: "https://www.freytter.eus/" },
+            { name: "ASOCIACIÓN INTERCULTURAL DE PROFESIONALES DEL HOGAR Y DE LOS CUIDADOS", url: "https://aiphyc.org/" },
+            { name: "ASOCIACIÓN MARROQUÍ PARA LA INTEGRACIÓN DE LOS INMIGRANTES", url: "https://www.asociacionmarroqui.com/" },
+            { name: "ASOCIACIÓN PARA EL DESARROLLO ECONÓMICO Y SOCIAL RAYUELA", url: "https://asociacionrayuela.com/" },
+            { name: "FUNDACIÓN EUROPEA PARA LA COOPERACIÓN NORTE SUR", url: "https://fecons.org/" },
+            { name: "PSICÓLOGOS SIN FRONTERAS", url: "https://psicologassinfronteras.org/" },
+            { name: "ASOCIACIÓN POSTHAC, ENTIDAD SOCIAL POR EL EMPLEO", url: "https://posthac.org/" },
+            { name: "UNIÓN DE PEQUEÑOS AGRICULTORES Y GANADEROS DE JAÉN", url: "https://upa.es/jaen/" },
+            { name: "ASOCIACIÓN SARE", url: "https://sare-vih.org/" },
+            { name: "MOVIMIENTO POR LA PAZ, EL DESARME Y LA LIBERTAD", url: "https://www.mpdl.org/" },
+            { name: "HUMANITARIOS SIN FRONTERAS", url: "https://humanitariossinfronteras.com/" },
+            { name: "FUNDACIÓN ÀMBIT PREVENCIÓ", url: "https://fambitprevencio.org/" },
+            { name: "ONG RESCATE INTERNACIONAL", url: "https://ongrescate.org/" },
+            { name: "REFUGIADOS BIENVENIDOS ESPAÑA", url: "https://refugees-welcome.es/" },
+            { name: "CÁRITAS DIOCESANA DE BILBAO", url: "https://www.caritasbi.org/" },
+            { name: "CÁRITAS DIOCESANA DE SALAMANCA", url: "https://www.caritasalamanca.org/" },
+            { name: "ASOCIACIÓN COLUMBARES", url: "https://columbares.org/" },
+            { name: "COMISIÓN ESPAÑOLA DE AYUDA AL REFUGIADO (CEAR)", url: "https://www.cear.es/" },
+            { name: "ASOCIACIÓN PRO DERECHOS HUMANOS DE ANDALUCIA", url: "https://www.apdha.org/" },
+            { name: "ASOCIACIÓN APOYO", url: "https://asociacionapoyo.blogspot.com/" },
+            { name: "ASOCIACIÓN CESAL", url: "https://www.cesal.org/" },
+            { name: "CÁRITAS DIOCESANA DE SAN SEBASTIÁN", url: "https://www.caritasgipuzkoa.org/es/inicio" },
+            { name: "FUNDACIO CIUTADANIA MULTICULTURAL - MESCLADIS", url: "https://mescladis-org.b.iwith.org/es/" },
+            { name: "ASOCIACIÓN KUÉNTAME ATENCIÓN CENTRADA EN LA PERSONA", url: "https://kuentame.weebly.com/" },
+            { name: "ASOCIACIÓN BAIZARA", url: "https://baizara.org/" },
+            { name: "AGENCIA ADVENTISTA PARA EL DESARROLLO Y RECURSOS ASISTENCIALES", url: "https://adra-es.org/" },
+            { name: "ASOCIACIÓN PARA LA COOPERACIÓN ENTRE COMUNIDADES", url: "https://www.cvongd.org/es/entidades/acoec/" },
+            { name: "ASSOCIACIÓ SOCIAL PROJECT 4.0", url: "http://socialproject.cat/" },
+            { name: "ASOCIACIÓN BENÉFICA CANOA SOLIDARIA", url: "https://canoasolidaria.org/es/Pagina-de-inicio/" },
+            { name: "VIRAVENTOS", url: "https://viraventos.org/" },
+            { name: "ASOCIACION MUJERES PROGRESISTAS LA MITAD DEL CIELO", url: "https://mitaddelcielo.org/" },
+            { name: "ASOCIACIÓN ESLABÓN INICIATIVAS DE PROMOCIÓN DE EMPLEO", url: "https://eslabon.org/" },
+            { name: "PRODIVERSA. PROGRESO Y DIVERSIDAD", url: "https://prodiversa.eu/" },
+            { name: "TXINGUDIKO ELKARTE FEMINISTA", url: "https://www.irun.org/es/entidades-servicios/25-asociacion-txingudiko-elkarte-feminista?iden=7334" },
+            { name: "COMISIÓN PARA LA INVESTIGACIÓN DE MALOS TRATOS A MUJERES", url: "https://malostratos.org/" },
+            { name: "ASOCIACIÓN MELILLA ACOGE", url: "https://acoge.org/melilla-acoge/" },
+            { name: "CENTRO DE DESARROLLO RURAL O VISO", url: "https://www.cdroviso.org/" },
+            { name: "SAN RICARDO PAMPURI", url: "https://www.casadesanantonio.es/" },
+            { name: "RED DE ACOGIDA DEL PUERTO DE SANTA MARÍA", url: "" },
+            { name: "HERMANAS OBLATAS DEL STSMO REDENTOR", url: "https://hermanasoblatas.org/" },
+            { name: "ASOCIACION RUMIÑAHUI", url: "https://www.ruminahui.org/" },
+            { name: "FUNDACIÓN CEPAIM ACCIÓN INTEGRAL CON MIGRANTES", url: "https://www.cepaim.org/" },
+            { name: "IRSEARABA S.COOP", url: "https://www.irsearaba.eus/" },
+            { name: "FUNDACIÓ PRIVADA GUNÉ", url: "https://fundaciogune.org/" },
+            { name: "ASOCIACIÓN SERVICIO DOMÉSTICO ACTIVO SEDOAC", url: "https://sedoac.es/" },
+            { name: "ASOCIACIÓN SOMCUSTODIA", url: "https://somcustodia.org/" },
+            { name: "CENTRO DE DESARROLLO RURAL CARRIÓN DE LOS CONDES", url: "https://cdrcarriondeloscondes.org/" },
+            { name: "ASSOCIACIÓ REUS REFUGI", url: "https://reusrefugi.cat/" },
+            { name: "ASOCIACIÓN ARRATS", url: "https://www.arrats.org/" },
+            { name: "FUNDACIÓN HARRIBIDE", url: "https://harribide.org/es/inicio-4/" },
+            { name: "IZANGAI ELKARTEA", url: "https://www.izangai.org/" },
+            { name: "ZABALTZEN-SARTU KOOP. ELK.", url: "https://zabaltzensartu.org/es/" },
+            { name: "ASOCIACION EL OLIVAR", url: "https://www.asociacionelolivar.org/" },
+            { name: "UNION DE PEQUEÑOS AGRICULTORES Y GANADEROS DE CASTILLA-LA MANCHA (UPA CLM)", url: "" },
+            { name: "ASOC. COOPERACIÓN Y DESARROLLO CON EL NORTE DE ÁFRICA (CODENAF)", url: "https://www.codenaf.org/" },
+            { name: "ASOCIACIÓN INTERCULTURAL CANDOMBE", url: "https://www.candombe.org.es/" },
+            { name: "PROVIVIENDA", url: "https://provivienda.org/" },
+            { name: "FUNDACIÓN JUANJO TORREJÓN", url: "https://fundacionjuanjotorrejon.org/" },
+            { name: "ASSOCIACIÓ DE VEÏNS LA FLORIDA", url: "" },
+            { name: "CONFEDERACION DE COMISIONES OBRERAS", url: "https://www.ccoo.es/" },
+            { name: "ASOCIACIÓN CANARIA DE MEDIADORES INTERCULTURALES", url: "https://www.acamei.org/" }
+        ];
+
+        function App() {
+            // View states: 'home' | 'local_offices' | 'agencies_list'
+            const [currentView, setCurrentView] = useState('home');
+            const [contactedAgencies, setContactedAgencies] = useState(new Set());
+            const [isDark, setIsDark] = useState(false);
+            const [searchTerm, setSearchTerm] = useState('');
+
+            // 动态判断当前使用的数据集
+            const isLocalView = currentView === 'local_offices';
+            const activeData = isLocalView ? localOfficesData : agenciesData;
+            const viewTitle = isLocalView ? "马德里免预约注册办公室" : "授权名单详情";
+            const viewSubtitle = isLocalView ? "Oficinas de registro municipales que atienden SIN cita previa" : "Registro Electrónico de Extranjería";
+
+            const filteredData = activeData.filter(item => 
+                item.name.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+
+            const toggleContactStatus = (agencyName) => {
+                setContactedAgencies((prev) => {
+                    const newSet = new Set(prev);
+                    if (newSet.has(agencyName)) newSet.delete(agencyName);
+                    else newSet.add(agencyName);
+                    return newSet;
+                });
+            };
+
+            const toggleTheme = () => {
+                const newTheme = !isDark;
+                setIsDark(newTheme);
+                document.documentElement.setAttribute('data-theme', newTheme ? 'dark' : 'light');
+            };
+
+            const handleMouseMove = (e, ref) => {
+                if (!ref.current) return;
+                const rect = ref.current.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const glare = ref.current.querySelector('.liquid-glare');
+                if (glare) {
+                    glare.style.setProperty("--x", `${x}px`);
+                    glare.style.setProperty("--y", `${y}px`);
+                }
+            };
+
+            const btn1Ref = useRef(null);
+            const btn2Ref = useRef(null);
+
+            return (
+                <React.Fragment>
+                    <div className="bg-mesh">
+                        <div className="blob blob-1"></div>
+                        <div className="blob blob-2"></div>
+                        <div className="blob blob-3"></div>
+                    </div>
+
+                    {/* HOMEPAGE VIEW */}
+                    {currentView === 'home' && (
+                        <div className="flex flex-col items-center justify-center min-h-screen relative z-10 px-4">
+                            <div className="flex flex-col gap-4 w-full items-center">
+                                {/* 按钮 1: 跳转至本地免预约办公点列表 */}
+                                <div 
+                                    className="home-big-btn" 
+                                    ref={btn1Ref} 
+                                    onMouseMove={(e) => handleMouseMove(e, btn1Ref)}
+                                    onClick={() => { setSearchTerm(''); setCurrentView('local_offices'); }}
+                                >
+                                    <div className="liquid-glare-container"><div className="liquid-glare"></div></div>
+                                    <span className="btn-text">社会服务机构地点</span>
+                                </div>
+
+                                {/* 按钮 2: 跳转至移民署合作机构列表 */}
+                                <div 
+                                    className="home-big-btn" 
+                                    ref={btn2Ref} 
+                                    onMouseMove={(e) => handleMouseMove(e, btn2Ref)}
+                                    onClick={() => { setSearchTerm(''); setCurrentView('agencies_list'); }}
+                                >
+                                    <div className="liquid-glare-container"><div className="liquid-glare"></div></div>
+                                    <span className="btn-text text-center leading-tight">
+                                        移民署官方合作机构
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div className="absolute bottom-12 flex flex-col items-center gap-2">
+                                <span className="text-xs opacity-40 font-medium tracking-widest">THEME</span>
+                                <button className="theme-btn border border-[var(--glass-border)] bg-[var(--glass-bg)] shadow-lg backdrop-blur-md" onClick={toggleTheme}>
+                                    <div className="theme-icon-wrapper">
+                                        <svg className="sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                                        <svg className="moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                                    </div>
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* LIST VIEW (Dynamic for both Local Offices and Agencies) */}
+                    {(currentView === 'local_offices' || currentView === 'agencies_list') && (
+                        <div className="app-container relative z-10 pt-8">
+                            <div className="max-w-7xl mx-auto px-4 sm:px-6 w-full space-y-6">
+                                
+                                <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-8">
+                                    <div className="flex flex-col gap-4 w-full md:w-auto">
+                                        <button onClick={() => setCurrentView('home')} className="back-glass-btn self-start">
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+                                            返回主页
+                                        </button>
+                                        <div className="flex items-center gap-4">
+                                            <h1 className="text-2xl font-bold tracking-tight">{viewTitle}</h1>
+                                            <span className="text-xs px-3 py-1 rounded-full font-bold bg-amber-500/20 text-amber-600 border border-amber-500/30">
+                                                当前显示 {filteredData.length} / {activeData.length} 机构
+                                            </span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="relative w-full md:w-96">
+                                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none opacity-50">
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                                        </div>
+                                        <input
+                                            type="text"
+                                            placeholder="搜索机构名称或地址..."
+                                            value={searchTerm}
+                                            onChange={(e) => setSearchTerm(e.target.value)}
+                                            className="w-full pl-10 pr-4 py-3 rounded-xl text-sm glass-input"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                                    {filteredData.map((item, index) => {
+                                        const isContacted = contactedAgencies.has(item.name);
+                                        
+                                        return (
+                                            <div key={index} className={`relative flex flex-col h-full p-5 rounded-2xl glass-card transition-all duration-300 ${!isLocalView && isContacted ? 'contacted grayscale-[30%]' : ''}`}>
+                                                
+                                                {/* Top Tags Zone: 仅在合作机构视图下渲染状态标签 */}
+                                                {!isLocalView && (
+                                                    <div className="flex justify-between items-start mb-4 gap-2">
+                                                        {item.url ? (
+                                                            <span className="px-2 py-1 rounded-md text-[10px] font-bold tracking-wider bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 whitespace-nowrap">
+                                                                ✓ 网址已验证
+                                                            </span>
+                                                        ) : (
+                                                            <span className="px-2 py-1 rounded-md text-[10px] font-bold tracking-wider bg-gray-500/10 text-gray-500 border border-gray-500/20 whitespace-nowrap">
+                                                                缺少网址
+                                                            </span>
+                                                        )}
+                                                        
+                                                        <button 
+                                                            onClick={() => toggleContactStatus(item.name)}
+                                                            className={`px-2 py-1 rounded-md text-[10px] font-bold tracking-wider border transition-colors whitespace-nowrap ${
+                                                                isContacted 
+                                                                ? 'bg-amber-500/20 text-amber-600 border-amber-500/30' 
+                                                                : 'bg-transparent text-[var(--text-secondary)] border-[var(--text-secondary)] hover:bg-[var(--text-main)] hover:text-[var(--bg-color)]'
+                                                            }`}
+                                                        >
+                                                            {isContacted ? '已联络处理' : '标记已联络'}
+                                                        </button>
+                                                    </div>
+                                                )}
+
+                                                {/* Middle Zone */}
+                                                <div className="flex-1 mb-5 flex flex-col justify-start">
+                                                    <h3 className={`font-bold leading-snug text-[15px] ${!isLocalView && isContacted ? 'line-through opacity-60' : ''}`}>
+                                                        {item.name}
+                                                    </h3>
+                                                    {isLocalView ? (
+                                                        <div className="mt-2 text-xs opacity-70 font-medium leading-relaxed">
+                                                            <p>{item.address}</p>
+                                                            <p>{item.telDisplay}</p>
+                                                        </div>
+                                                    ) : (
+                                                        <p className="text-[11px] opacity-50 mt-2 truncate font-mono">
+                                                            {item.url || '---'}
+                                                        </p>
+                                                    )}
+                                                </div>
+
+                                                {/* Bottom Action Button Zone */}
+                                                {isLocalView ? (
+                                                    <div className="flex gap-2 w-full mt-auto">
+                                                        <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.name + " " + item.address + " Madrid")}`} target="_blank" rel="noopener noreferrer" 
+                                                           className="flex-1 py-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all glass-btn">
+                                                            地图导航
+                                                        </a>
+                                                        <a href={`tel:${item.telDial}`} 
+                                                           className="flex-1 py-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all glass-btn">
+                                                            联络方式
+                                                        </a>
+                                                    </div>
+                                                ) : (
+                                                    item.url ? (
+                                                        <a href={item.url} target="_blank" rel="noopener noreferrer" 
+                                                           className="w-full mt-auto py-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all glass-btn">
+                                                            访问官方网站 ↗
+                                                        </a>
+                                                    ) : (
+                                                        <button disabled 
+                                                           className="w-full mt-auto py-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 opacity-40 cursor-not-allowed border border-[var(--glass-border)] bg-[var(--glass-bg)]">
+                                                            暂无网站数据
+                                                        </button>
+                                                    )
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                                
+                                {filteredData.length === 0 && (
+                                    <div className="text-center py-20 opacity-50">
+                                        <p>未搜索到相关机构信息...</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
+                </React.Fragment>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
